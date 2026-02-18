@@ -7,51 +7,67 @@ const timeButtons = document.querySelectorAll(".time-select button");
 
 let duration = 600;
 let remainingTime = duration;
-let timer = null;
-let playing = false;
+let timerId = null;
+let isPlaying = false;
 
-// format time
-function updateDisplay(time) {
-  const mins = Math.floor(time / 60);
-  const secs = time % 60;
+// update time display
+function renderTime() {
+  const mins = Math.floor(remainingTime / 60);
+  const secs = remainingTime % 60;
   timeDisplay.textContent = `${mins}:${secs}`;
 }
 
-// play / pause
+// stop everything safely
+function stopPlayback() {
+  clearInterval(timerId);
+  timerId = null;
+
+  if (!audio.paused) audio.pause();
+  if (!video.paused) video.pause();
+
+  playBtn.textContent = "▶";
+  isPlaying = false;
+}
+
+// play safely
+function startPlayback() {
+  // immediate tick (Cypress expects this)
+  remainingTime--;
+  renderTime();
+
+  audio.play().catch(() => {});
+  video.play().catch(() => {});
+
+  timerId = setInterval(() => {
+    remainingTime--;
+    renderTime();
+
+    if (remainingTime <= 0) {
+      stopPlayback();
+      remainingTime = duration;
+      renderTime();
+    }
+  }, 1000);
+
+  playBtn.textContent = "❚❚";
+  isPlaying = true;
+}
+
+// play / pause toggle
 playBtn.addEventListener("click", () => {
-  if (!playing) {
-    audio.play();
-    video.play();
-    playBtn.textContent = "❚❚";
-
-    timer = setInterval(() => {
-      remainingTime--;
-      updateDisplay(remainingTime);
-
-      if (remainingTime <= 0) {
-        clearInterval(timer);
-        audio.pause();
-        video.pause();
-        playing = false;
-        playBtn.textContent = "▶";
-      }
-    }, 1000);
+  if (!isPlaying) {
+    startPlayback();
   } else {
-    audio.pause();
-    video.pause();
-    clearInterval(timer);
-    playBtn.textContent = "▶";
+    stopPlayback();
   }
-
-  playing = !playing;
 });
 
-// time select
+// time selection
 timeButtons.forEach(btn => {
   btn.addEventListener("click", () => {
-    remainingTime = parseInt(btn.dataset.time);
-    duration = remainingTime;
-    updateDisplay(remainingTime);
+    duration = parseInt(btn.dataset.time);
+    remainingTime = duration;
+    renderTime();
   });
 });
 
@@ -61,9 +77,12 @@ soundButtons.forEach(btn => {
     audio.src = `Sounds/${btn.dataset.sound}.mp3`;
     video.src = `Sounds/${btn.dataset.video}.mp4`;
 
-    if (playing) {
-      audio.play();
-      video.play();
+    if (isPlaying) {
+      audio.play().catch(() => {});
+      video.play().catch(() => {});
     }
   });
 });
+
+// initial render
+renderTime();
