@@ -7,30 +7,37 @@
 <body>
   <div class="app">
 
+    <!-- Video Section -->
     <div class="vid-container">
       <video class="video" loop muted>
-        <source src="Sounds/beach.mp4" type="video/mp4">
+        <source src="Sounds/beach.mp4" type="video/mp4" />
       </video>
     </div>
 
+    <!-- Player Section -->
     <div class="player-container">
       <audio class="audio">
-        <source src="Sounds/beach.mp3" type="audio/mp3">
+        <source src="Sounds/beach.mp3" type="audio/mp3" />
       </audio>
 
-      <div class="sound-picker">
-        <button data-sound="beach" data-video="beach">Meditation-A</button>
-        <button data-sound="rain" data-video="rain">Meditation-B</button>
-      </div>
-
+      <!-- Time Buttons -->
       <div class="time-select">
-        <button class="smaller-mins" data-time="120">2 Min</button>
-        <button class="medium-mins" data-time="300">5 Min</button>
-        <button class="long-mins" data-time="600">10 Min</button>
+        <button class="smaller-mins" data-time="120">2 Minutes</button>
+        <button class="medium-mins" data-time="300">5 Minutes</button>
+        <button class="long-mins" data-time="600">10 Minutes</button>
       </div>
 
+      <!-- Play Button -->
       <button class="play">▶</button>
+
+      <!-- Time Display -->
       <div class="time-display">10:0</div>
+
+      <!-- Sound Picker -->
+      <div class="sound-picker">
+        <button data-sound="rain" data-video="rain">🌧</button>
+        <button data-sound="beach" data-video="beach">☀</button>
+      </div>
     </div>
 
   </div>

@@ -2,15 +2,15 @@ const audio = document.querySelector(".audio");
 const video = document.querySelector(".video");
 const playBtn = document.querySelector(".play");
 const timeDisplay = document.querySelector(".time-display");
-const soundButtons = document.querySelectorAll(".sound-picker button");
 const timeButtons = document.querySelectorAll(".time-select button");
+const soundButtons = document.querySelectorAll(".sound-picker button");
 
 let duration = 600;
 let remaining = 600;
-let intervalId = null;
-let isPlaying = false;
+let timer = null;
+let playing = false;
 
-/* ---------- helpers ---------- */
+/* helpers */
 function renderTime() {
   const mins = Math.floor(remaining / 60);
   const secs = remaining % 60;
@@ -18,37 +18,33 @@ function renderTime() {
 }
 
 function clearTimer() {
-  if (intervalId) {
-    clearInterval(intervalId);
-    intervalId = null;
+  if (timer) {
+    clearInterval(timer);
+    timer = null;
   }
 }
 
-/* ---------- pause ---------- */
+/* pause */
 function pauseMedia() {
   clearTimer();
-
   if (!audio.paused) audio.pause();
   if (!video.paused) video.pause();
-
   playBtn.textContent = "▶";
-  isPlaying = false;
+  playing = false;
 }
 
-/* ---------- play ---------- */
+/* play */
 async function playMedia() {
-  // immediate tick (required by Cypress)
+  // Cypress expects immediate tick
   remaining--;
   renderTime();
 
   try {
-    await audio.play();   // 🔑 WAIT here
+    await audio.play();
     await video.play();
-  } catch (e) {
-    // ignore autoplay errors in test env
-  }
+  } catch (e) {}
 
-  intervalId = setInterval(() => {
+  timer = setInterval(() => {
     remaining--;
     renderTime();
 
@@ -60,19 +56,15 @@ async function playMedia() {
   }, 1000);
 
   playBtn.textContent = "❚❚";
-  isPlaying = true;
+  playing = true;
 }
 
-/* ---------- toggle ---------- */
+/* toggle */
 playBtn.addEventListener("click", () => {
-  if (!isPlaying) {
-    playMedia();   // async-safe
-  } else {
-    pauseMedia();
-  }
+  playing ? pauseMedia() : playMedia();
 });
 
-/* ---------- time select ---------- */
+/* time select */
 timeButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     duration = parseInt(btn.dataset.time);
@@ -81,13 +73,12 @@ timeButtons.forEach(btn => {
   });
 });
 
-/* ---------- sound switch ---------- */
+/* sound switch */
 soundButtons.forEach(btn => {
   btn.addEventListener("click", async () => {
     audio.src = `Sounds/${btn.dataset.sound}.mp3`;
     video.src = `Sounds/${btn.dataset.video}.mp4`;
-
-    if (isPlaying) {
+    if (playing) {
       try {
         await audio.play();
         await video.play();
@@ -96,5 +87,5 @@ soundButtons.forEach(btn => {
   });
 });
 
-/* ---------- init ---------- */
+/* init */
 renderTime();
