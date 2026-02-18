@@ -6,21 +6,27 @@ const soundButtons = document.querySelectorAll(".sound-picker button");
 const timeButtons = document.querySelectorAll(".time-select button");
 
 let duration = 600;
-let remainingTime = duration;
-let timerId = null;
+let remaining = 600;
+let intervalId = null;
 let isPlaying = false;
 
-// update time display
+/* ---------- helpers ---------- */
 function renderTime() {
-  const mins = Math.floor(remainingTime / 60);
-  const secs = remainingTime % 60;
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
   timeDisplay.textContent = `${mins}:${secs}`;
 }
 
-// stop everything safely
-function stopPlayback() {
-  clearInterval(timerId);
-  timerId = null;
+function clearTimer() {
+  if (intervalId) {
+    clearInterval(intervalId);
+    intervalId = null;
+  }
+}
+
+/* ---------- pause ---------- */
+function pauseMedia() {
+  clearTimer();
 
   if (!audio.paused) audio.pause();
   if (!video.paused) video.pause();
@@ -29,22 +35,26 @@ function stopPlayback() {
   isPlaying = false;
 }
 
-// play safely
-function startPlayback() {
-  // immediate tick (Cypress expects this)
-  remainingTime--;
+/* ---------- play ---------- */
+async function playMedia() {
+  // immediate tick (required by Cypress)
+  remaining--;
   renderTime();
 
-  audio.play().catch(() => {});
-  video.play().catch(() => {});
+  try {
+    await audio.play();   // 🔑 WAIT here
+    await video.play();
+  } catch (e) {
+    // ignore autoplay errors in test env
+  }
 
-  timerId = setInterval(() => {
-    remainingTime--;
+  intervalId = setInterval(() => {
+    remaining--;
     renderTime();
 
-    if (remainingTime <= 0) {
-      stopPlayback();
-      remainingTime = duration;
+    if (remaining <= 0) {
+      pauseMedia();
+      remaining = duration;
       renderTime();
     }
   }, 1000);
@@ -53,36 +63,38 @@ function startPlayback() {
   isPlaying = true;
 }
 
-// play / pause toggle
+/* ---------- toggle ---------- */
 playBtn.addEventListener("click", () => {
   if (!isPlaying) {
-    startPlayback();
+    playMedia();   // async-safe
   } else {
-    stopPlayback();
+    pauseMedia();
   }
 });
 
-// time selection
+/* ---------- time select ---------- */
 timeButtons.forEach(btn => {
   btn.addEventListener("click", () => {
     duration = parseInt(btn.dataset.time);
-    remainingTime = duration;
+    remaining = duration;
     renderTime();
   });
 });
 
-// sound switch
+/* ---------- sound switch ---------- */
 soundButtons.forEach(btn => {
-  btn.addEventListener("click", () => {
+  btn.addEventListener("click", async () => {
     audio.src = `Sounds/${btn.dataset.sound}.mp3`;
     video.src = `Sounds/${btn.dataset.video}.mp4`;
 
     if (isPlaying) {
-      audio.play().catch(() => {});
-      video.play().catch(() => {});
+      try {
+        await audio.play();
+        await video.play();
+      } catch (e) {}
     }
   });
 });
 
-// initial render
+/* ---------- init ---------- */
 renderTime();
