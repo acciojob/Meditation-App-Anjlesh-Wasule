@@ -1,69 +1,69 @@
-const audio = document.getElementById("audio");
-const video = document.getElementById("video");
+const audio = document.querySelector(".audio");
+const video = document.querySelector(".video");
 const playBtn = document.querySelector(".play");
 const timeDisplay = document.querySelector(".time-display");
-const timeButtons = document.querySelectorAll("#time-select button");
 const soundButtons = document.querySelectorAll(".sound-picker button");
+const timeButtons = document.querySelectorAll(".time-select button");
 
-let duration = 600; // 10 minutes default
-let isPlaying = false;
+let duration = 600;
+let remainingTime = duration;
+let timer = null;
+let playing = false;
 
-// Play / Pause
+// format time
+function updateDisplay(time) {
+  const mins = Math.floor(time / 60);
+  const secs = time % 60;
+  timeDisplay.textContent = `${mins}:${secs}`;
+}
+
+// play / pause
 playBtn.addEventListener("click", () => {
-  if (!isPlaying) {
+  if (!playing) {
     audio.play();
     video.play();
-    playBtn.textContent = "❚ ❚";
+    playBtn.textContent = "❚❚";
+
+    timer = setInterval(() => {
+      remainingTime--;
+      updateDisplay(remainingTime);
+
+      if (remainingTime <= 0) {
+        clearInterval(timer);
+        audio.pause();
+        video.pause();
+        playing = false;
+        playBtn.textContent = "▶";
+      }
+    }, 1000);
   } else {
     audio.pause();
     video.pause();
+    clearInterval(timer);
     playBtn.textContent = "▶";
   }
-  isPlaying = !isPlaying;
+
+  playing = !playing;
 });
 
-// Time select
+// time select
 timeButtons.forEach(btn => {
   btn.addEventListener("click", () => {
-    duration = parseInt(btn.dataset.time);
-    audio.currentTime = 0;
-    updateTime(duration);
+    remainingTime = parseInt(btn.dataset.time);
+    duration = remainingTime;
+    updateDisplay(remainingTime);
   });
 });
 
-// Sound & video switch
+// sound switch
 soundButtons.forEach(btn => {
   btn.addEventListener("click", () => {
-    const sound = btn.dataset.sound;
-    const vid = btn.dataset.video;
+    audio.src = `Sounds/${btn.dataset.sound}.mp3`;
+    video.src = `Sounds/${btn.dataset.video}.mp4`;
 
-    audio.src = `Sounds/${sound}.mp3`;
-    video.src = `Sounds/${vid}.mp4`;
-
-    if (isPlaying) {
+    if (playing) {
       audio.play();
       video.play();
     }
   });
 });
-
-// Countdown logic
-audio.ontimeupdate = () => {
-  const remaining = duration - audio.currentTime;
-
-  if (remaining <= 0) {
-    audio.pause();
-    video.pause();
-    audio.currentTime = 0;
-    playBtn.textContent = "▶";
-    isPlaying = false;
-  }
-
-  updateTime(remaining);
-};
-
-function updateTime(time) {
-  const mins = Math.floor(time / 60);
-  const secs = Math.floor(time % 60);
-  timeDisplay.textContent = `${mins}:${secs < 10 ? "0" + secs : secs}`;
-}
