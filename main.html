@@ -1,47 +1,56 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <link rel="stylesheet" href="styles.css" />
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meditation App</title>
+    <link rel="stylesheet" href="styles.css">
 </head>
-
 <body>
-  <div class="app">
+    <div id="app">
+        <!-- Video Container -->
+        <div class="vid-container">
+            <video id="beach-video" loop muted>
+                <source src="video/beach.mp4" type="video/mp4">
+            </video>
+            <video id="rain-video" loop muted style="display: none;">
+                <source src="video/rain.mp4" type="video/mp4">
+            </video>
+        </div>
 
-    <!-- Video Section -->
-    <div class="vid-container">
-      <video class="video" loop muted>
-        <source src="Sounds/beach.mp4" type="video/mp4" />
-      </video>
+        <!-- Player Container for Audio -->
+        <div class="player-container">
+            <audio id="beach-audio" loop>
+                <source src="Sounds/beach.mp3" type="audio/mpeg">
+            </audio>
+            <audio id="rain-audio" loop>
+                <source src="Sounds/rain.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
+        <!-- Main Controls -->
+        <div class="main-controls">
+            <!-- Time Display -->
+            <div class="time-display">10:0</div>
+            
+            <!-- Time Selection Buttons -->
+            <div class="time-select">
+                <button id="smaller-mins" data-time="2">2 Minutes</button>
+                <button id="medium-mins" data-time="5">5 Minutes</button>
+                <button id="long-mins" data-time="10">10 Minutes</button>
+            </div>
+
+            <!-- Sound Picker Buttons -->
+            <div class="sound-picker">
+                <button id="beach-sound" class="active">Beach</button>
+                <button id="rain-sound">Rain</button>
+            </div>
+
+            <!-- Play/Pause Button -->
+            <button class="play">▶</button>
+        </div>
     </div>
 
-    <!-- Player Section -->
-    <div class="player-container">
-      <audio class="audio">
-        <source src="Sounds/beach.mp3" type="audio/mp3" />
-      </audio>
-
-      <!-- Time Buttons -->
-      <div class="time-select">
-        <button class="smaller-mins" data-time="120">2 Minutes</button>
-        <button class="medium-mins" data-time="300">5 Minutes</button>
-        <button class="long-mins" data-time="600">10 Minutes</button>
-      </div>
-
-      <!-- Play Button -->
-      <button class="play">▶</button>
-
-      <!-- Time Display -->
-      <div class="time-display">10:0</div>
-
-      <!-- Sound Picker -->
-      <div class="sound-picker">
-        <button data-sound="rain" data-video="rain">🌧</button>
-        <button data-sound="beach" data-video="beach">☀</button>
-      </div>
-    </div>
-
-  </div>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

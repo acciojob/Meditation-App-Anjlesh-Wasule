@@ -1,53 +1,135 @@
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-body {
-  height: 100vh;
-  overflow: hidden;
+#app {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
 }
 
-.app {
-  position: relative;
-  height: 100vh;
+.vid-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
 }
 
 .vid-container video {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .player-container {
-  position: relative;
-  z-index: 2;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center;
-  background: rgba(0,0,0,0.3);
+    display: none;
 }
 
-.time-select button,
-.sound-picker button,
-.play {
-  padding: 10px 20px;
-  margin: 5px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-}
-
-.play {
-  font-size: 24px;
+.main-controls {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: white;
+    z-index: 1;
+    width: 80%;
+    max-width: 600px;
 }
 
 .time-display {
-  font-size: 2rem;
-  color: white;
+    font-size: 6rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.time-select {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.time-select button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    border: 2px solid transparent;
+}
+
+.time-select button:hover {
+    background: rgba(255, 255, 255, 0.3);
+    border-color: white;
+}
+
+#smaller-mins {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#medium-mins {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#long-mins {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.sound-picker {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.sound-picker button {
+    padding: 1rem 2rem;
+    font-size: 1.2rem;
+    border: none;
+    border-radius: 50px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    border: 2px solid transparent;
+}
+
+.sound-picker button.active {
+    background: rgba(255, 255, 255, 0.4);
+    border-color: white;
+}
+
+.sound-picker button:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.play {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
+    border: 2px solid white;
+}
+
+.play:hover {
+    background: rgba(255, 255, 255, 0.3);
+    transform: scale(1.1);
 }
